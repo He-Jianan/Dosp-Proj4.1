@@ -1,10 +1,6 @@
 ﻿open System
 open Akka.FSharp
 open Akka.Remote
-open Akka.Actor
-open System.IO
-open System.Security.Cryptography
-open Akka.Configuration
 
 
 
@@ -65,7 +61,7 @@ let system = System.create "RemoteClient" config
 let RemoteServer = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/Actor-MsgHandler")
 let tweetIdServer = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/tweetIdActor")
 
-let mutable count = 0
+//let mutable count = 0
 
 let CreateUsersActor =
     spawn system ("Actor" + "-Creator")
@@ -106,9 +102,11 @@ let GenerateMessageActor =
                 | :? int as msg ->
                     printfn "%i" msg
                 | :? string as msg ->
-                    count <- count + 1
-                    //let handler = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/Actor-MsgHandler")
-                    //printfn "%s" msg
+                    //count <- count + 1
+                    ////let handler = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/Actor-MsgHandler")
+                    //if count < 6500 then
+                    //    printfn "%s" msg
+                    printfn "%s" msg
                 | :? operationMsg as msg ->
                     let operation_id = msg.operation_id
                     let num_of_user = msg.num_of_users
@@ -187,7 +185,7 @@ let GenerateMessageActor =
                     | 5 ->
                         operation_type <- "quert"
                         let tag_id = Random().Next(0, num_of_user)
-                        let tag = (tag_id |> string)
+                        let tag = "Tag" + (tag_id |> string)
                         msgToServer <- "quert,,,,,"+tag+","
                         let handler = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/Actor-MsgHandler")
                         handler <! msgToServer
@@ -212,11 +210,11 @@ let main argv =
     
     printf "Input the number of users: "
     let N = Console.ReadLine() |> int
-    let total_count = 90
+    //let total_count = 900
     
 
     // Create N users with user_id
-    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     for i = 0 to N - 1 do
 
         let createUserMsg = {user_id = i}
@@ -226,8 +224,8 @@ let main argv =
     //while(count < total_count) do
     //    printfn "Received %i responses" count
     //    printfn "total_count = %i" total_count
-    //stopWatch.Stop()
-    //printfn "register_time = %f" stopWatch.Elapsed.TotalMilliseconds
+    stopWatch.Stop()
+    printfn "The time of registration with 1000 clients = %f" stopWatch.Elapsed.TotalMilliseconds
 
         
             
@@ -236,7 +234,7 @@ let main argv =
     // Create Zipf Distribution of subscribers.
     //Threading.Thread.Sleep(10000)
     //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-    Threading.Thread.Sleep(10000)
+    //Threading.Thread.Sleep(20000)
     let mutable increment = 0
     let mutable user1_id = ""
     let mutable user2_id = ""
@@ -255,11 +253,15 @@ let main argv =
     //    printfn "Received %i responses" count
     //    printfn "total_count = %i" total_count
     //stopWatch.Stop()
-    //printfn "subscribe_time = %f" stopWatch.Elapsed.TotalMilliseconds
+    //printfn "The time of subscribing users with 1000 clients = %f" stopWatch.Elapsed.TotalMilliseconds
     
            
 
     // Users posts tweets
+    //Threading.Thread.Sleep(10000)
+    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    //count <- 0
+    //Threading.Thread.Sleep(10000)
     let mutable numPost = 0
     let maxPost = (int)(N/5)
     let mutable numTag = 0
@@ -271,10 +273,6 @@ let main argv =
     let mutable stringTag = ""
     let mutable stringMen = ""
     let mutable tweetContent = ""
-
-    //Threading.Thread.Sleep(20000)
-    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-    //count <- 0
     for i = 0 to N - 1 do
         numPost <- 1
         user1_id <- "user" + (i|>string)
@@ -306,47 +304,47 @@ let main argv =
     //    printfn "Received %i responses" count
     //    printfn "total_count = %i" total_count
     //stopWatch.Stop()
-    //printfn "send_time = %f" stopWatch.Elapsed.TotalMilliseconds
+    //printfn "The time of sending tweets with 1000 clients = %f" stopWatch.Elapsed.TotalMilliseconds
     
 
-    //// Users retweets
+    //Users retweets
     //Threading.Thread.Sleep(20000)
-    //let mutable msgToId = ""
-    //let mutable resp_1 = ""
-    //let mutable tweet_id = ""
-    //let tweetIdActor = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/tweetIdActor")
+    let mutable msgToId = ""
+    let mutable resp_1 = ""
+    let mutable tweet_id = ""
+    let tweetIdActor = system.ActorSelection("akka.tcp://Project4@localhost:9002/user/tweetIdActor")
     //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     //count <- 0
-    //for i = 0 to N - 1 do
-    //    user1_id <- "user" + (i|>string)
-    //    msgToId <- user1_id
-    //    tweetIdActor <! msgToId
-    //    //printfn "[Client Retweet]: %i th user retweets!" i
-    //    //let resp = msgToServer/Hnader <! msgTold
-    //    //tweet_id <- resp_1 |> string
-    //    //msgToServer <- "retw,"+user1_id+",,"+tweet_id+",,,"
+    for i = 0 to N - 1 do
+        user1_id <- "user" + (i|>string)
+        msgToId <- user1_id
+        tweetIdActor <! msgToId
+        //printfn "[Client Retweet]: %i th user retweets!" i
+        //let resp = msgToServer/Hnader <! msgTold
+        //tweet_id <- resp_1 |> string
+        //msgToServer <- "retw,"+user1_id+",,"+tweet_id+",,,"
     //while(count < total_count) do
     //    printfn "Received %i responses" count
     //    printfn "total_count = %i" total_count
     //stopWatch.Stop()
-    //printfn "retweet_time = %f" stopWatch.Elapsed.TotalMilliseconds
+    //printfn "The time of retweet with 1000 clients = %f" stopWatch.Elapsed.TotalMilliseconds
 
      //Randomly apply 100 operations, except the registeration.
 
-    Threading.Thread.Sleep(20000)
+    //Threading.Thread.Sleep(30000)
     let mutable op_id = 0
-    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-    count<-0
+    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    //count<-0
     for k = 0 to 100 do
-        op_id <- 6
+        op_id <- Random().Next(4, 7)
         let msgToGenerator = {num_of_users = N; operation_id = op_id}
         //printfn "[Client Random Operation]: operation id = %i" op_id
         GenerateMessageActor <! msgToGenerator
-    while(count < total_count) do
-        printfn "Received %i responses" count
-        printfn "total_count = %i" total_count
-    stopWatch.Stop()
-    printfn "random_time = %f" stopWatch.Elapsed.TotalMilliseconds
+    //while(count < total_count) do
+    //    printfn "Received %i responses" count
+    //    printfn "total_count = %i" total_count
+    //stopWatch.Stop()
+    //printfn "The time of query tweets containing tag with 1000 clients = %f" stopWatch.Elapsed.TotalMilliseconds
     //let msg = "reg,hjn,,,,,"
     //RemoteServer <! msg
     

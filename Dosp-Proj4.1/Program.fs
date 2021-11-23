@@ -1,9 +1,6 @@
 ﻿open System
 open Akka.FSharp
 open Akka.Remote
-open System.IO
-open System.Security.Cryptography
-open Akka.Configuration
 
 ////////////////////////////////////////////////////////
 // 1. CLIENT -----message[,,,,,]-----> SERVER.HANDLER //
